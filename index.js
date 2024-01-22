@@ -1,27 +1,24 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const path = require("path");
 
 app.use(cors());
-app.use("/public", express.static(process.cwd() + "/public"));
-
+app.use("/public", express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.sendFile(process.cwd() + "/views/index.html");
+  res.sendFile(path.join(__dirname, "/views/index.html"));
 });
 
 app.post("/api/fileanalyse", (req, res) => {
-  if (!req.body || !req.body.upfile) {
-    return res.json({ error: "No file selected" });
-  }
+  const { originalname, mimetype, size } = req.body.files.upfile;
 
-  const file = req.body.upfile;
   const fileInfo = {
-    name: file.originalname,
-    type: file.mimetype,
-    size: file.size,
+    name: originalname,
+    type: mimetype,
+    size: size,
   };
 
   res.json(fileInfo);
